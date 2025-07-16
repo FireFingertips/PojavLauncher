@@ -34,35 +34,30 @@ jobs:
           cd app_pojavlauncher/libs
           wget https://github.com/PojavLauncherTeam/LTW/releases/latest/download/ltw-release.aar
 
-      - name: Get JRE 8
-        uses: dawidd6/action-download-artifact@v9
-        with:
-          workflow: build.yml
-          path: app_pojavlauncher/src/main/assets/components/jre
-          workflow_conclusion: success
-          repo: PojavLauncherTeam/android-openjdk-build-multiarch
-          branch: buildjre8
-          name: jre8-pojav
+      - name: Get JREs from Fork Releases
+        run: |
+          # Create target directories
+          mkdir -p app_pojavlauncher/src/main/assets/components/jre
+          mkdir -p app_pojavlauncher/src/main/assets/components/jre-new
+          mkdir -p app_pojavlauncher/src/main/assets/components/jre-21
 
-      - name: Get JRE17
-        uses: dawidd6/action-download-artifact@v9
-        with:
-          workflow: build.yml
-          path: app_pojavlauncher/src/main/assets/components/jre-new
-          workflow_conclusion: success
-          repo: PojavLauncherTeam/android-openjdk-build-multiarch
-          branch: buildjre17-21
-          name: jre17-pojav
+          # --- JRE 8 ---
+          # Replace YOUR_USERNAME and YOUR_FORK_NAME with your actual GitHub username and forked repo name.
+          wget -q https://github.com/FireFingertips/PojavLauncher/releases/download/v1.0.0-jre-assets/jre8-pojav.zip -O app_pojavlauncher/src/main/assets/components/jre/jre8-pojav.zip
+          unzip -q app_pojavlauncher/src/main/assets/components/jre/jre8-pojav.zip -d app_pojavlauncher/src/main/assets/components/jre/
 
-      - name: Get JRE21
-        uses: dawidd6/action-download-artifact@v9
-        with:
-          workflow: build.yml
-          path: app_pojavlauncher/src/main/assets/components/jre-21
-          workflow_conclusion: success
-          repo: PojavLauncherTeam/android-openjdk-build-multiarch
-          branch: buildjre17-21
-          name: jre21-pojav
+          # --- JRE 17 ---
+          wget -q https://github.com/FireFingertips/PojavLauncher/releases/download/v1.0.0-jre-assets/jre17-pojav.zip -O app_pojavlauncher/src/main/assets/components/jre-new/jre17-pojav.zip
+          unzip -q app_pojavlauncher/src/main/assets/components/jre-new/jre17-pojav.zip -d app_pojavlauncher/src/main/assets/components/jre-new/
+
+          # --- JRE 21 ---
+          wget -q https://github.com/FireFingertips/PojavLauncher/releases/download/v1.0.0-jre-assets/jre21-pojav.zip -O app_pojavlauncher/src/main/assets/components/jre-21/jre21-pojav.zip
+          unzip -q app_pojavlauncher/src/main/assets/components/jre-21/jre21-pojav.zip -d app_pojavlauncher/src/main/assets/components/jre-21/
+
+          # Clean up downloaded zips
+          rm app_pojavlauncher/src/main/assets/components/jre/*.zip
+          rm app_pojavlauncher/src/main/assets/components/jre-new/*.zip
+          rm app_pojavlauncher/src/main/assets/components/jre-21/*.zip
 
       - uses: gradle/actions/setup-gradle@v4
         with:
@@ -134,4 +129,3 @@ jobs:
         with:
           name: app-debug-noruntime
           path: out/app-debug-noruntime.*
-
